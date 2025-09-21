@@ -16,7 +16,7 @@ version = "2"
 features = ["postgres_backend", "numeric"]
 
 [dependencies.diesel-async]
-version = "0.3"
+version = "0.6"
 features = ["postgres"]
 
 [dependencies.serenity]
