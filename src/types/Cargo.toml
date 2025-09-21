@@ -1,0 +1,30 @@
+[package]
+name = "arcadian-db-types"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bigdecimal = "0"
+thiserror = "1"
+
+[dependencies.serde]
+version = "1"
+features = ["derive"]
+
+[dependencies.diesel]
+version = "2"
+features = ["postgres_backend", "numeric"]
+
+[dependencies.diesel-async]
+version = "0.3"
+features = ["postgres"]
+
+[dependencies.serenity]
+version = "0.11"
+default-features = false
+# TODO Find out if it's possible to grab model without the backend.
+features = ["model", "rustls_backend"]
+
+[dependencies.error_rules]
+package = "arcadian-error-rules"
+path = "../../error-rules"

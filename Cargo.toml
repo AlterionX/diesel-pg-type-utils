@@ -1,0 +1,29 @@
+[package]
+name = "pg-type-util"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bigdecimal = "0"
+thiserror = "1"
+
+[dependencies.serde]
+version = "1"
+features = ["derive"]
+
+[dependencies.diesel]
+version = "2"
+features = ["postgres_backend", "numeric"]
+
+[dependencies.diesel-async]
+version = "0.3"
+features = ["postgres"]
+
+[dependencies.serenity]
+version = "0.11"
+default-features = false
+# TODO Find out if it's possible to grab model without the backend.
+features = ["model", "rustls_backend"]
+
+[dependencies.treeerror]
+git = "https://github.com/AlterionX/treeerror.git"
