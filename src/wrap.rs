@@ -133,7 +133,7 @@ macro_rules! wrap_u32 {
         $name:ident<$db:ty>
     } => {
         $crate::wrap::wrap_type! {
-            $(#[derive(($trait),+)])*
+            $(#[derive($($trait),+)])*
             #[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
             $name<$db>($crate::diesel::sql_types::BigInt > $crate::PgU32 > u32)
             |u| {
@@ -153,7 +153,8 @@ macro_rules! wrap_u64 {
         $name:ident<$db:ty>
     } => {
         $crate::wrap::wrap_type! {
-            #[derive($($($trait),+)? Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
+            $(#[derive($($trait),+)])*
+            #[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
             $name<$db>($crate::diesel::sql_types::Numeric > $crate::PgU64 > u64)
             |u| {
                 u.into()

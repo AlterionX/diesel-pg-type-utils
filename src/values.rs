@@ -779,13 +779,20 @@ impl AddAssign for SlotCapacity {
     }
 }
 
-wrap_u32!(DecimalPlaces<DB>);
+wrap_u32! {
+    #[derive(Default)]
+    DecimalPlaces<DB>
+}
 impl From<u32> for DecimalPlaces {
     fn from(capacity: u32) -> Self {
         Self(capacity)
     }
 }
-wrap_u64!(ItemAmount<DB>);
+
+wrap_u64! {
+    #[derive(Default)]
+    ItemAmount<DB>
+}
 impl ItemAmount {
     pub fn inner_mut(&mut self) -> &mut u64 {
         &mut self.0
