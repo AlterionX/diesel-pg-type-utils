@@ -22,7 +22,6 @@ pub mod wrap;
 pub mod ext;
 
 pub mod id;
-pub mod values;
 
 use crate::error::{
     NumericU64Error,

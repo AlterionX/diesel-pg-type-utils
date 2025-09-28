@@ -140,7 +140,7 @@ macro_rules! wrap_u32 {
                 u.into()
             }
             |u| {
-                &$crate::PgU32(u)
+                &$crate::PgU32::from(u)
             }
         }
     };
@@ -160,7 +160,7 @@ macro_rules! wrap_u64 {
                 u.into()
             }
             |u| {
-                &$crate::PgU64(u)
+                &$crate::PgU64::from(u)
             }
         }
     };

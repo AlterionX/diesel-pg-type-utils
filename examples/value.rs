@@ -10,7 +10,7 @@ use diesel::{
     },
 };
 
-use crate::{
+use diesel_pg_type_utils::{
     wrap::{
         impl_sql_convert,
         wrap_u64,
@@ -872,3 +872,6 @@ impl_sql_convert!(
         &kind.to_i32()
     }
 );
+
+/// Examples are for macros, this does not run code.
+fn main() {}
