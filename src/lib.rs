@@ -1,4 +1,4 @@
-use std::{ops::{SubAssign, Sub, Add, AddAssign, Neg, Mul}, cmp::Ordering};
+use std::{cmp::Ordering, hash::Hash, ops::{Add, AddAssign, Mul, Neg, Sub, SubAssign}};
 
 use bigdecimal::{Zero, BigDecimal};
 use diesel_async::AsyncConnection;
@@ -31,12 +31,13 @@ use crate::error::{
 
 wrap_type! {
     #[derive(Debug, Copy, Clone, Default, PartialOrd, Ord, PartialEq, Eq, Hash)]
-    PgU64<Pg>(Numeric > bigdecimal::BigDecimal > u64) |big| {
+    PgU64<Pg>(Numeric > bigdecimal::BigDecimal > u64)
+    |big| {
         use bigdecimal::{
             ToPrimitive,
             Signed,
         };
-        let value = if let Some(value) = big.to_u64() {
+        if let Some(value) = big.to_u64() {
             Ok(value)
         } else if big > u64::MAX.into() {
             Err(NumericU64Error::Overflow)
@@ -46,9 +47,9 @@ wrap_type! {
             Err(NumericU64Error::Decimal)
         } else {
             Err(NumericU64Error::Unknown)?
-        }?;
-        value
-    } |b| {
+        }?
+    }
+    |b| {
         use bigdecimal::BigDecimal;
         &BigDecimal::from(b)
     }
@@ -84,7 +85,7 @@ impl From<u32> for PgU32 {
     }
 }
 
-#[derive(Debug, Default, Copy, Clone, Hash)]
+#[derive(Debug, Default, Copy, Clone)]
 #[derive(Serialize, Deserialize)]
 #[derive(AsExpression, FromSqlRow)]
 #[diesel(sql_type = Numeric)]
@@ -111,7 +112,8 @@ impl Add for SignedU64 {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        let mut cloned = self.clone();
+        // implicit copy
+        let mut cloned = self;
         cloned += other;
         cloned
     }
@@ -121,13 +123,11 @@ impl AddAssign for SignedU64 {
     fn add_assign(&mut self, other: Self) {
         if self.is_negative == other.is_negative {
             self.total += other.total;
+        } else if self.total >= other.total {
+            self.total -= other.total;
         } else {
-            if self.total >= other.total {
-                self.total -= other.total;
-            } else {
-                self.total = other.total - self.total;
-                self.is_negative = other.is_negative;
-            }
+            self.total = other.total - self.total;
+            self.is_negative = other.is_negative;
         }
     }
 }
@@ -197,6 +197,18 @@ impl PartialEq for SignedU64 {
 
 impl Eq for SignedU64 {}
 
+impl Hash for SignedU64 {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        if self.total == 0 {
+            0u64.hash(state);
+            false.hash(state);
+        } else {
+            self.total.hash(state);
+            self.is_negative.hash(state);
+        }
+    }
+}
+
 impl Mul for SignedU64 {
     type Output = SignedU64;
     fn mul(self, other: Self) -> Self::Output {
@@ -228,7 +240,7 @@ impl_sql_convert!(
             ToPrimitive,
             Signed,
         };
-        let value = if let Some(value) = big.abs().to_u64() {
+        if let Some(value) = big.abs().to_u64() {
             if big.is_negative() {
                 Ok(SignedU64 {
                     is_negative: true,
@@ -245,9 +257,8 @@ impl_sql_convert!(
         } else if !big.is_integer() {
             Err(NumericU64Error::Decimal)
         } else {
-            Err(NumericU64Error::Unknown)?
-        }?;
-        value
+            Err(NumericU64Error::Unknown)
+        }?
     }
     |v| {
         if v.is_negative {

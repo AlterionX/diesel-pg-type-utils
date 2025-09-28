@@ -8,48 +8,47 @@ use diesel::{
         SingleValue,
         BigInt,
     },
-    sql_function, QueryResult,
+    define_sql_function,
+    QueryResult,
 };
 
-sql_function! {
+define_sql_function! {
     #[sql_name = "COALESCE"]
     fn coalesce2<T: SingleValue>(v0: Nullable<T>, base: T) -> T
 }
 
-sql_function! {
+define_sql_function! {
     #[sql_name = "COALESCE"]
     fn coalesce3<T: SingleValue>(v0: Nullable<T>, v1: Nullable<T>, base: T) -> T
 }
 
-sql_function! {
+define_sql_function! {
     #[sql_name = "COALESCE"]
     fn coalesce_i(x: Nullable<Integer>, y: Integer) -> Integer
 }
 
-pub use coalesce_i::coalesce_i as coalesce_i_module;
-
-sql_function! {
+define_sql_function! {
     #[sql_name = "COALESCE"]
     fn coalesce_s(x: Nullable<VarChar>, y: VarChar) -> VarChar
 }
 
-sql_function! {
+define_sql_function! {
     #[sql_name = "COALESCE"]
     fn coalesce_n(x: Nullable<BigInt>, y: BigInt) -> BigInt
 }
 
-sql_function! {
+define_sql_function! {
     #[sql_name = "LOWER"]
     fn lower(a: VarChar) -> VarChar
 }
 
-sql_function! {
+define_sql_function! {
     #[sql_name = "ARRAY_AGG"]
     #[aggregate]
     fn array_agg<T: SingleValue>(a: T) -> Array<T>
 }
 
-sql_function! {
+define_sql_function! {
     #[sql_name = "RANDOM"]
     fn random() -> Integer
 }

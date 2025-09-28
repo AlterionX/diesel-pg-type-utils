@@ -36,12 +36,12 @@ macro_rules! impl_sql_convert {
 #[macro_export]
 macro_rules! wrap_type {
     {
-        $(#[derive($($trait:ident),+)])?
+        $(#[derive($($trait:ident),+)])*
         $name:ident <$db: ty> ( $sql:ty > $intermediate:ty > $wrapped:ty )
             |$forward:ident| $convert_forward:block
             |$backward:ident| $convert_backward:block
     } => {
-        $(#[derive($($trait),+)])?
+        $(#[derive($($trait),+)])*
         #[derive($crate::serde::Serialize, $crate::serde::Deserialize)]
         #[derive($crate::diesel::AsExpression, $crate::diesel::FromSqlRow)]
         #[diesel(sql_type = $sql)]
@@ -78,7 +78,7 @@ macro_rules! wrap_type {
         }
 
         impl $name {
-            pub unsafe fn assume_valid(f: $wrapped) -> Self {
+            pub fn assume_valid(f: $wrapped) -> Self {
                 Self(f)
             }
 
@@ -88,11 +88,11 @@ macro_rules! wrap_type {
         }
     };
     (
-        $(#[derive($($trait:ident),+)])?
+        $(#[derive($($trait:ident),+)])*
         $name:ident < $db:ty > ( $sql:ty > $wrapped:ty )
     ) => {
         $crate::wrap::wrap_type! {
-            $(#[derive($($trait),+)])?
+            $(#[derive($($trait),+)])*
             $name<$db>($sql > $wrapped > $wrapped) |junk| { junk } |junk| { &junk }
         }
     };
@@ -100,28 +100,40 @@ macro_rules! wrap_type {
 
 #[macro_export]
 macro_rules! wrap_i32 {
-    ($name:ident<$db:ty>) => {
-        $crate::wrap::wrap_type!(
+    {
+        $(#[derive($($trait:ident),+)])*
+        $name:ident<$db:ty>
+    } => {
+        $crate::wrap::wrap_type! {
+            $(#[derive($($trait),+)])*
             #[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
             $name<$db>($crate::diesel::sql_types::Integer > i32)
-        );
+        }
     };
 }
 
 #[macro_export]
 macro_rules! wrap_i64 {
-    ($name:ident<$db:ty>) => {
-        $crate::wrap::wrap_type!(
+    {
+        $(#[derive($($trait:ident),+)])*
+        $name:ident<$db:ty>
+    } => {
+        $crate::wrap::wrap_type! {
+            $(#[derive(($trait),+)])*
             #[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
             $name<$db>($crate::diesel::sql_types::BigInt > i64)
-        );
+        }
     };
 }
 
 #[macro_export]
 macro_rules! wrap_u32 {
-    ($name:ident<$db:ty>) => {
+    {
+        $(#[derive($($trait:ident),+)])*
+        $name:ident<$db:ty>
+    } => {
         $crate::wrap::wrap_type! {
+            $(#[derive(($trait),+)])*
             #[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
             $name<$db>($crate::diesel::sql_types::BigInt > $crate::PgU32 > u32)
             |u| {
@@ -136,9 +148,12 @@ macro_rules! wrap_u32 {
 
 #[macro_export]
 macro_rules! wrap_u64 {
-    ($name:ident<$db:ty>) => {
+    {
+        $(#[derive($($trait:ident),+)])*
+        $name:ident<$db:ty>
+    } => {
         $crate::wrap::wrap_type! {
-            #[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
+            #[derive($($($trait),+)? Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
             $name<$db>($crate::diesel::sql_types::Numeric > $crate::PgU64 > u64)
             |u| {
                 u.into()

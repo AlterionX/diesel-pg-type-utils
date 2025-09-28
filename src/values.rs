@@ -32,7 +32,7 @@ pub enum InventoryScope {
 
 impl FromStr for InventoryScope {
     type Err = (); // TODO Figure out GAT FromStr
-    fn from_str<'a>(s: &'a str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         let normalized = s.to_lowercase();
         match normalized.as_str() {
             "bot" => Ok(InventoryScope::Bot),
@@ -57,9 +57,7 @@ impl_sql_convert!(
     Text > String > InventoryScope
     |s| {
         InventoryScope::from_str(s.as_str())
-            .ok().ok_or_else(|| {
-                "bad value"
-            })?
+            .ok().ok_or("bad value")?
     }
     |scope| {
         &scope.as_str().to_owned()
@@ -105,9 +103,7 @@ impl_sql_convert!(
     Text > String > TransactionPurpose
     |s| {
         TransactionPurpose::from_str(s.as_str())
-            .ok_or_else(|| {
-                "bad config"
-            })?
+            .ok_or("bad config")?
     }
     |tier| {
         &tier.as_str().to_owned()
@@ -189,9 +185,7 @@ impl_sql_convert!(
     Text > String > SoloExpeditionRewardTier
     |s| {
         SoloExpeditionRewardTier::from_str(s.as_str())
-            .ok_or_else(|| {
-                "bad config"
-            })?
+            .ok_or("bad config")?
     }
     |tier| {
         &tier.as_str().to_owned()
@@ -207,16 +201,20 @@ pub enum ShopLimitBoundary {
     Never,
 }
 
-impl ShopLimitBoundary {
-    pub fn from_str(s: &str) -> Option<Self> {
+impl FromStr for ShopLimitBoundary {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "never" => Some(Self::Never),
-            "weekly" => Some(Self::Weekly),
-            "daily" => Some(Self::Daily),
-            _ => None,
+            "never" => Ok(Self::Never),
+            "weekly" => Ok(Self::Weekly),
+            "daily" => Ok(Self::Daily),
+            _ => Err(()),
         }
     }
+}
 
+impl ShopLimitBoundary {
     pub fn to_str(&self) -> &'static str {
         match self {
             Self::Never => "never",
@@ -231,9 +229,7 @@ impl_sql_convert!(
     Text > String > ShopLimitBoundary
     |s| {
         ShopLimitBoundary::from_str(s.as_str())
-            .ok_or_else(|| {
-                "bad shop limit boundary"
-            })?
+            .map_err(|()| "bad shop limit boundary")?
     }
     |tier| {
         &tier.to_str().to_owned()
@@ -250,17 +246,21 @@ pub enum Direction {
     West,
 }
 
-impl Direction {
-    pub fn from_str(s: &str) -> Option<Self> {
+impl FromStr for Direction {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "1" | "n" | "north" => Some(Self::North),
-            "2" | "e" | "east" | "east " => Some(Self::East),
-            "3" | "s" | "south" => Some(Self::South),
-            "4" | "w" | "west" | "west " => Some(Self::West),
-            _ => None,
+            "1" | "n" | "north" => Ok(Self::North),
+            "2" | "e" | "east" | "east " => Ok(Self::East),
+            "3" | "s" | "south" => Ok(Self::South),
+            "4" | "w" | "west" | "west " => Ok(Self::West),
+            _ => Err(()),
         }
     }
+}
 
+impl Direction {
     pub fn to_str(&self) -> &'static str {
         match self {
             Self::North => "north",
@@ -276,9 +276,7 @@ impl_sql_convert!(
     Text > String > Direction
     |s| {
         Direction::from_str(s.as_str())
-            .ok_or_else(|| {
-                "bad config"
-            })?
+            .map_err(|()| "bad config")?
     }
     |tier| {
         &tier.to_str().to_owned()
@@ -350,73 +348,77 @@ pub enum UserJourneyKind {
     OregonTrailMinigame,
 }
 
-impl UserJourneyKind {
-    pub fn from_str(s: &str) -> Option<Self> {
+impl FromStr for UserJourneyKind {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "grantitem" => Some(Self::AdminGrantItem),
+            "grantitem" => Ok(Self::AdminGrantItem),
 
-            "solo" => Some(Self::ExpeditionsSolo),
-            "checksolo" => Some(Self::ExpeditionsCheckSolo),
-            "wander" => Some(Self::ExpeditionsWander),
-            "weekly" => Some(Self::ExpeditionsWeekly),
+            "solo" => Ok(Self::ExpeditionsSolo),
+            "checksolo" => Ok(Self::ExpeditionsCheckSolo),
+            "wander" => Ok(Self::ExpeditionsWander),
+            "weekly" => Ok(Self::ExpeditionsWeekly),
 
-            "atlas" => Some(Self::ExplorationAtlas),
-            "destinations" => Some(Self::ExplorationDestinations),
-            "location" => Some(Self::ExplorationLocation),
-            "map" => Some(Self::ExplorationMap),
-            "travel" => Some(Self::ExplorationTravel),
-            "tripplan" => Some(Self::ExplorationTripPlan),
+            "atlas" => Ok(Self::ExplorationAtlas),
+            "destinations" => Ok(Self::ExplorationDestinations),
+            "location" => Ok(Self::ExplorationLocation),
+            "map" => Ok(Self::ExplorationMap),
+            "travel" => Ok(Self::ExplorationTravel),
+            "tripplan" => Ok(Self::ExplorationTripPlan),
 
-            "classinfo" => Some(Self::GeneralClassInfo),
-            "image" => Some(Self::GeneralImage),
-            "info" => Some(Self::GeneralInfo),
-            "help" => Some(Self::GeneralHelp),
-            "ping" => Some(Self::GeneralPing),
-            "random" => Some(Self::GeneralRandom),
+            "classinfo" => Ok(Self::GeneralClassInfo),
+            "image" => Ok(Self::GeneralImage),
+            "info" => Ok(Self::GeneralInfo),
+            "help" => Ok(Self::GeneralHelp),
+            "ping" => Ok(Self::GeneralPing),
+            "random" => Ok(Self::GeneralRandom),
 
-            "iteminfo" => Some(Self::ItemInfo),
-            "itemuse" => Some(Self::ItemUse),
+            "iteminfo" => Ok(Self::ItemInfo),
+            "itemuse" => Ok(Self::ItemUse),
 
-            "setdefault" => Some(Self::ProfileDefaultSet),
-            "getdefault" => Some(Self::ProfileDefaultGet),
-            "clearwallet" => Some(Self::ProfileWalletClear),
-            "getwallet" => Some(Self::ProfileWalletGet),
-            "setwallet" => Some(Self::ProfileWalletSet),
-            "cooldown" => Some(Self::ProfileCooldown),
-            "inventory" => Some(Self::ProfileInventory),
-            "party" => Some(Self::ProfileParty),
-            "setpreference" => Some(Self::ProfilePreferenceSet),
+            "setdefault" => Ok(Self::ProfileDefaultSet),
+            "getdefault" => Ok(Self::ProfileDefaultGet),
+            "clearwallet" => Ok(Self::ProfileWalletClear),
+            "getwallet" => Ok(Self::ProfileWalletGet),
+            "setwallet" => Ok(Self::ProfileWalletSet),
+            "cooldown" => Ok(Self::ProfileCooldown),
+            "inventory" => Ok(Self::ProfileInventory),
+            "party" => Ok(Self::ProfileParty),
+            "setpreference" => Ok(Self::ProfilePreferenceSet),
 
-            "status" => Some(Self::ProtagonistStatusCheck),
-            "class" => Some(Self::ProtagonistClass), // Merged get info & update
-            "equip" => Some(Self::ProtagonistEquip),
-            "protagonist" => Some(Self::ProtagonistDisplay),
-            "protaginfo" => Some(Self::ProtagonistInfo),
-            "rename" => Some(Self::ProtagonistNameSet), // Also reset
-            "roll" => Some(Self::ProtagonistRoll),
-            "unequip" => Some(Self::ProtagonistUnequip),
-            "unequipall" => Some(Self::ProtagonistUnequipAll),
+            "status" => Ok(Self::ProtagonistStatusCheck),
+            "class" => Ok(Self::ProtagonistClass), // Merged get info & update
+            "equip" => Ok(Self::ProtagonistEquip),
+            "protagonist" => Ok(Self::ProtagonistDisplay),
+            "protaginfo" => Ok(Self::ProtagonistInfo),
+            "rename" => Ok(Self::ProtagonistNameSet), // Also reset
+            "roll" => Ok(Self::ProtagonistRoll),
+            "unequip" => Ok(Self::ProtagonistUnequip),
+            "unequipall" => Ok(Self::ProtagonistUnequipAll),
 
-            "levels" => Some(Self::StatisticsLevels),
-            "population" => Some(Self::StatisticsPopulations),
+            "levels" => Ok(Self::StatisticsLevels),
+            "population" => Ok(Self::StatisticsPopulations),
 
-            "train" => Some(Self::TrainingTrain),
+            "train" => Ok(Self::TrainingTrain),
 
-            "claimbounced" => Some(Self::TransactionClaimBounced),
-            "deposit" => Some(Self::TransactionDeposit),
-            "withdraw" => Some(Self::TransactionWithdraw),
-            "send" => Some(Self::TransactionSend),
-            "trade" => Some(Self::TransactionTrade),
+            "claimbounced" => Ok(Self::TransactionClaimBounced),
+            "deposit" => Ok(Self::TransactionDeposit),
+            "withdraw" => Ok(Self::TransactionWithdraw),
+            "send" => Ok(Self::TransactionSend),
+            "trade" => Ok(Self::TransactionTrade),
 
-            "shop" => Some(Self::ShopShop),
-            "buy" => Some(Self::ShopBuy),
+            "shop" => Ok(Self::ShopShop),
+            "buy" => Ok(Self::ShopBuy),
 
-            "oregon" => Some(Self::OregonTrailMinigame),
+            "oregon" => Ok(Self::OregonTrailMinigame),
 
-            _ => None,
+            _ => Err(()),
         }
     }
+}
 
+impl UserJourneyKind {
     pub fn from_command_str(s: &str) -> Option<Self> {
         match s {
             "grantitem" => Some(Self::AdminGrantItem),
@@ -701,9 +703,7 @@ impl_sql_convert!(
     Text > String > UserJourneyKind
     |s| {
         UserJourneyKind::from_str(s.as_str())
-            .ok_or_else(|| {
-                "bad config"
-            })?
+            .map_err(|()| "bad config")?
     }
     |tier| {
         &tier.to_str().to_owned()
@@ -734,15 +734,13 @@ impl Level {
     }
 }
 
-wrap_i32!(SlotCapacity<DB>);
+wrap_i32! {
+    #[derive(Default)]
+    SlotCapacity<DB>
+}
 impl From<i32> for SlotCapacity {
     fn from(capacity: i32) -> Self {
         SlotCapacity(capacity)
-    }
-}
-impl Default for SlotCapacity {
-    fn default() -> Self {
-        Self(0)
     }
 }
 impl SlotCapacity {
@@ -759,7 +757,8 @@ impl Sub for SlotCapacity {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        let mut store = self.clone();
+        // implicit copy
+        let mut store = self;
         store -= other;
         store
     }
@@ -768,7 +767,8 @@ impl Add for SlotCapacity {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        let mut store = self.clone();
+        // implicit copy
+        let mut store = self;
         store += other;
         store
     }
@@ -785,17 +785,7 @@ impl From<u32> for DecimalPlaces {
         Self(capacity)
     }
 }
-impl Default for DecimalPlaces {
-    fn default() -> Self {
-        Self(0)
-    }
-}
 wrap_u64!(ItemAmount<DB>);
-impl Default for ItemAmount {
-    fn default() -> Self {
-        Self(0)
-    }
-}
 impl ItemAmount {
     pub fn inner_mut(&mut self) -> &mut u64 {
         &mut self.0
@@ -815,7 +805,8 @@ impl Sub for ItemAmount {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        let mut store = self.clone();
+        // Implicit copy
+        let mut store = self;
         store -= other;
         store
     }
@@ -824,7 +815,8 @@ impl Add for ItemAmount {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        let mut store = self.clone();
+        // Implicit copy
+        let mut store = self;
         store += other;
         store
     }
@@ -854,7 +846,7 @@ impl UIKind {
         }
     }
 
-    fn to_i32(&self) -> i32 {
+    fn to_i32(self) -> i32 {
         match self {
             Self::Message => 0,
             Self::Button => 1,
@@ -867,10 +859,7 @@ impl_sql_convert!(
     <DB>
     Integer > i32 > UIKind
     |i| {
-        UIKind::from_i32(i)
-            .ok_or_else(|| {
-                "bad config"
-            })?
+        UIKind::from_i32(i).ok_or("bad config")?
     }
     |kind| {
         &kind.to_i32()
