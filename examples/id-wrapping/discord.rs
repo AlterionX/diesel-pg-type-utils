@@ -10,8 +10,8 @@ use diesel::{
     sql_types::Numeric,
 };
 
-use crate::wrap_i32;
-use crate::{
+use diesel_pg_type_utils::wrap_i32;
+use diesel_pg_type_utils::{
     wrap::{
         wrap_type,
         wrap_i64,
@@ -25,10 +25,10 @@ wrap_type! {
     #[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
     DiscordUserId<DB>(Numeric > PgU64 > InternalDiscordUserId)
         |pgu| {
-            InternalDiscordUserId(pgu.0)
+            InternalDiscordUserId(*pgu.inner())
         }
         |u| {
-            &PgU64(u.0)
+            &PgU64::from(u.0)
         }
 }
 impl From<InternalDiscordUserId> for DiscordUserId {
@@ -41,10 +41,10 @@ wrap_type! {
     #[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
     DiscordMessageId<DB>(Numeric > PgU64 > InternalDiscordMessageId)
         |pgu| {
-            InternalDiscordMessageId(pgu.0)
+            InternalDiscordMessageId(*pgu.inner())
         }
         |u| {
-            &PgU64(u.0)
+            &PgU64::from(u.0)
         }
 }
 impl From<InternalDiscordMessageId> for DiscordMessageId {
@@ -57,10 +57,10 @@ wrap_type! {
     #[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
     DiscordInteractionId<DB>(Numeric > PgU64 > InternalDiscordInteractionId)
         |pgu| {
-            InternalDiscordInteractionId(pgu.0)
+            InternalDiscordInteractionId(*pgu.inner())
         }
         |u| {
-            &PgU64(u.0)
+            &PgU64::from(u.0)
         }
 }
 impl From<InternalDiscordInteractionId> for DiscordInteractionId {
@@ -73,10 +73,10 @@ wrap_type! {
     #[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
     DiscordChannelId<DB>(Numeric > PgU64 > InternalDiscordChannelId)
         |pgu| {
-            InternalDiscordChannelId(pgu.0)
+            InternalDiscordChannelId(*pgu.inner())
         }
         |u| {
-            &PgU64(u.0)
+            &PgU64::from(u.0)
         }
 }
 impl From<InternalDiscordChannelId> for DiscordChannelId {
@@ -89,10 +89,10 @@ wrap_type! {
     #[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
     DiscordGuildId<DB>(Numeric > PgU64 > InternalDiscordGuildId)
         |pgu| {
-            InternalDiscordGuildId(pgu.0)
+            InternalDiscordGuildId(*pgu.inner())
         }
         |u| {
-            &PgU64(u.0)
+            &PgU64::from(u.0)
         }
 }
 impl From<InternalDiscordGuildId> for DiscordGuildId {
@@ -105,10 +105,10 @@ wrap_type! {
     #[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
     DiscordRoleId<DB>(Numeric > PgU64 > InternalDiscordRoleId)
         |pgu| {
-            InternalDiscordRoleId(pgu.0)
+            InternalDiscordRoleId(*pgu.inner())
         }
         |u| {
-            &PgU64(u.0)
+            &PgU64::from(u.0)
         }
 }
 impl From<InternalDiscordRoleId> for DiscordRoleId {

@@ -1,6 +1,6 @@
 use diesel::pg::Pg;
 
-use crate::wrap::{
+use diesel_pg_type_utils::wrap::{
     wrap_i64,
     wrap_i32,
     wrap_u64,

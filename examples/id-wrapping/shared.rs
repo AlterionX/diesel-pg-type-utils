@@ -1,6 +1,6 @@
 use diesel::pg::Pg;
 
-use crate::wrap::wrap_i32;
+use diesel_pg_type_utils::wrap::wrap_i32;
 
 type DB = Pg;
 
