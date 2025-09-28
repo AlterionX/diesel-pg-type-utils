@@ -19,11 +19,12 @@ features = ["postgres_backend", "numeric"]
 version = "0.6"
 features = ["postgres"]
 
-[dependencies.serenity]
-version = "0.11"
-default-features = false
-# TODO Find out if it's possible to grab model without the backend.
-features = ["model", "rustls_backend"]
-
 [dependencies.treeerror]
 git = "https://github.com/AlterionX/treeerror.git"
+
+# Used for examples
+[dev-dependencies.serenity]
+version = "0.11"
+default-features = false
+features = ["model", "rustls_backend"]
+

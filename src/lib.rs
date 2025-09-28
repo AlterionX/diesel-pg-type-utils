@@ -277,7 +277,7 @@ impl From<u64> for SignedU64 {
 
 
 pub trait PgC: AsyncConnection<Backend = Pg> + 'static {}
-impl<C:  AsyncConnection<Backend = Pg> + 'static> PgC for C {}
+impl <C: AsyncConnection<Backend = Pg> + 'static> PgC for C {}
 
 #[cfg(test)]
 mod test {
