@@ -20,7 +20,7 @@ version = "0.6"
 features = ["postgres"]
 
 [dependencies.treeerror]
-git = "https://github.com/AlterionX/treeerror.git"
+version = "0.1.1"
 
 # Used for examples
 [dev-dependencies.serenity]
