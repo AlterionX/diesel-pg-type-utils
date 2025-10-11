@@ -2,8 +2,6 @@ use thiserror::Error;
 
 use diesel::result::Error as DieselError;
 
-use treeerror::from;
-
 pub trait DoleExtension {
     fn to_dole<L: std::error::Error>(self) -> DieselOr<L>;
 }

@@ -1,5 +1,7 @@
 use std::{cmp::Ordering, hash::Hash, ops::{Add, AddAssign, Mul, Neg, Sub, SubAssign}};
 
+use treeerror::from;
+
 use bigdecimal::{Zero, BigDecimal};
 use diesel_async::AsyncConnection;
 // Re-export so that macros work.
@@ -53,11 +55,7 @@ wrap_type! {
 }
 
 // This is okay, since PgU64 exactly match the domain.
-impl From<u64> for PgU64 {
-    fn from(u: u64) -> Self {
-        Self(u)
-    }
-}
+from!(PgU64 = |u: u64| Self(u));
 
 wrap_type! {
     #[derive(Debug, Copy, Clone, Default, PartialOrd, Ord, PartialEq, Eq, Hash)]
@@ -76,11 +74,7 @@ wrap_type! {
 }
 
 // This is okay, since PgU32 exactly match the domain.
-impl From<u32> for PgU32 {
-    fn from(u: u32) -> Self {
-        Self(u)
-    }
-}
+from!(PgU32 = |u: u32| Self(u));
 
 #[derive(Debug, Default, Copy, Clone)]
 #[derive(Serialize, Deserialize)]
@@ -266,14 +260,10 @@ impl_sql_convert!(
     }
 );
 
-impl From<u64> for SignedU64 {
-    fn from(v: u64) -> Self {
-        Self {
-            total: v,
-            is_negative: false,
-        }
-    }
-}
+from!(SignedU64 = |u: u64| Self {
+    total: u,
+    is_negative: false,
+});
 
 
 pub trait PgC: AsyncConnection<Backend = Pg> + 'static {}
