@@ -38,7 +38,7 @@ wrap_type! {
         };
         if let Some(value) = big.to_u64() {
             Ok(value)
-        } else if big > u64::MAX.into() {
+        } else if big > u64::MAX {
             Err(NumericU64Error::Overflow)
         } else if big.is_negative() {
             Err(NumericU64Error::Negative)
@@ -243,7 +243,7 @@ impl_sql_convert!(
                     total: value,
                 })
             }
-        } else if big > u64::MAX.into() {
+        } else if big > u64::MAX {
             Err(NumericU64Error::Overflow)
         } else if !big.is_integer() {
             Err(NumericU64Error::Decimal)
