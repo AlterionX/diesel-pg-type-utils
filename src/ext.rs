@@ -1,15 +1,9 @@
 use std::{hash::Hash, collections::HashMap};
 
 use diesel::{
-    sql_types::{
-        Nullable,
-        Integer,
-        VarChar,
-        SingleValue,
-        BigInt,
-    },
-    define_sql_function,
-    QueryResult,
+    QueryResult, define_sql_function, sql_types::{
+        BigInt, Integer, Nullable, Record, SingleValue, VarChar
+    }
 };
 
 define_sql_function! {
@@ -46,6 +40,12 @@ define_sql_function! {
     #[sql_name = "ARRAY_AGG"]
     #[aggregate]
     fn array_agg<T: SingleValue>(a: T) -> Array<T>
+}
+
+define_sql_function! {
+    #[sql_name = "ARRAY_AGG"]
+    #[aggregate]
+    fn multi_array_agg<T: 'static>(a: Record<T>) -> Array<Record<T>>
 }
 
 define_sql_function! {
